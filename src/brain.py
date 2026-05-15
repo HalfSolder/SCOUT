@@ -2,8 +2,9 @@
 
 Each tick the brain receives:
   - The current sensor readings.
-  - A photo of the habitat (base64).
+  - A photo of the tank (base64).
   - A short history of recent ticks (so it knows what it just did).
+  - Whether it is currently day or night.
 
 It must return a structured decision: an action and a one-line reasoning.
 """
@@ -13,18 +14,19 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Any
 
 from openai import OpenAI
 
 
 VALID_ACTIONS = {
-    "noop",            # do nothing, keep watching
-    "heat_on",         # enable heat lamp
-    "heat_off",        # disable heat lamp
-    "dispense_food",   # drop one mealworm
-    "refill_water",    # run water pump (seconds in params)
-    "alert_human",     # ask a person to check
+    "noop",                 # do nothing, keep watching
+    "mist",                 # run the misting nozzle, params.seconds
+    "refresh_cgd",          # signal CGD should be replaced
+    "offer_insect",         # drop one dusted insect
+    "refill_water",         # top up fresh-water dish, params.seconds
+    "set_lights",           # params.state: "day" | "night" | "off"
+    "record_observation",   # log a behaviour note, params.note
+    "alert_human",          # ask a person to come check
 }
 
 
@@ -35,12 +37,14 @@ class Brain:
         self.client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
         self.system_prompt = system_prompt_path.read_text(encoding="utf-8")
 
-    def decide(self, readings: dict, frame_b64: str, history: list[dict]) -> dict:
+    def decide(self, readings: dict, frame_b64: str, history: list[dict],
+               is_night: bool) -> dict:
         """Ask GPT-5.5 what to do this tick."""
 
         user_payload = {
             "readings": readings,
             "targets": self.config["targets"],
+            "phase": "night" if is_night else "day",
             "recent_ticks": history,
         }
 

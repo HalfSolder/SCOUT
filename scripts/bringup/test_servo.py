@@ -1,8 +1,8 @@
-"""Phase 2 bring-up: sweep the mealworm feeder servo.
+"""Phase 2 bring-up: sweep the insect feeder servo.
 
 Run on the Pi only. The servo arm should rotate to the open position,
-release one mealworm, then rotate back to the closed position. Do this
-with the hopper EMPTY for the first run. Then with one mealworm. Then
+release one insect, then rotate back to the closed position. Do this
+with the hopper EMPTY for the first run. Then with one cricket. Then
 with five, to check it does not jam.
 
     python scripts/bringup/test_servo.py 23

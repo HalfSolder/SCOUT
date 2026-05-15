@@ -8,6 +8,7 @@ from __future__ import annotations
 import signal
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -26,6 +27,13 @@ def load_config() -> dict:
     cfg_path = Path(__file__).resolve().parent.parent / "config.yaml"
     with cfg_path.open("r", encoding="utf-8") as f:
         return yaml.safe_load(f)
+
+
+def is_night(cfg: dict) -> bool:
+    hour = datetime.now().hour
+    day_start = cfg.get("day_starts_hour", 8)
+    night_start = cfg.get("night_starts_hour", 20)
+    return not (day_start <= hour < night_start)
 
 
 def main() -> None:
@@ -49,45 +57,41 @@ def main() -> None:
     signal.signal(signal.SIGINT, _stop)
     signal.signal(signal.SIGTERM, _stop)
 
-    print(f"[scout] tick = {cfg['tick_seconds']}s, model = {cfg['model']}")
-    display.show_boot("Scout online. Watching Biscuits.")
+    print(f"[scout] tick = {cfg['tick_seconds']}s, model = {cfg['model']}, "
+          f"animal = {cfg.get('animal_name', 'Biscuit')} ({cfg.get('species', 'crested_gecko')})")
+    display.show_boot("Scout online. Watching Biscuit.")
 
     while running:
         tick_started = time.time()
 
-        # 1. LOOK
         frame_path, frame_b64 = camera.snapshot()
-
-        # 2. READ
         readings = read_all(cfg["pins"])
+        night = is_night(cfg)
 
-        # 3. SAFETY (pre-decision). May force an override action.
         override = safety.check(readings)
         if override is not None:
-            journal.append(kind="safety_override", readings=readings, action=override)
+            journal.append(kind="safety_override", readings=readings, action=override, night=night)
             display.show_alert(override["reason"])
             actuators.execute(override)
             _sleep_until(tick_started + cfg["tick_seconds"])
             continue
 
-        # 4. THINK
         recent = journal.recent(n=8)
-        decision = brain.decide(readings=readings, frame_b64=frame_b64, history=recent)
+        decision = brain.decide(readings=readings, frame_b64=frame_b64, history=recent,
+                                is_night=night)
 
-        # 5. ACT (also gated by safety)
         action = safety.gate(decision["action"], readings)
         actuators.execute(action)
 
-        # 6. WRITE IT DOWN
         journal.append(
             kind="tick",
             readings=readings,
             frame=str(frame_path),
             action=action,
             reasoning=decision.get("reasoning", ""),
+            night=night,
         )
 
-        # 7. SHOW IT
         display.show_tick(frame_path=frame_path, readings=readings, action=action,
                           reasoning=decision.get("reasoning", ""))
 

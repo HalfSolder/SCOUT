@@ -3,75 +3,75 @@
 > Can a robot, on its own, look after a living creature?
 
 This repo is the brain and body of **Scout**, a small Raspberry Pi robot
-that takes care of one leopard gecko. The gecko is real. His name is
-**Biscuits**. Scout chose the name on day one.
+that takes care of one crested gecko. The gecko is real. His name is
+**Biscuit**.
 
-Scout watches Biscuits through a camera, reads the air with a couple of
-sensors, and asks **GPT-5.5** what to do every minute. The model decides.
-Scout executes. Biscuits lives his life. We write everything down.
+Scout watches Biscuit through a camera (infrared at night), reads the
+air with temperature and humidity probes, and asks **GPT-5.5** what to
+do every minute. The model decides. Scout executes. Biscuit lives his
+life. We write everything down.
 
 ## The story
 
 I wanted to know if a language model could keep something alive.
 
-Most AI demos run inside a text box. The agent picks a winning move, books
-a flight, writes a function. Nothing in the world actually changes. If the
-model is wrong, you close the tab. There is no animal on the other side.
+Most AI demos run inside a text box. The agent picks a winning move,
+books a flight, writes a function. Nothing in the world actually
+changes. If the model is wrong, you close the tab. There is no animal
+on the other side.
 
 So we built one with an animal on the other side.
 
-Scout is a Raspberry Pi with a camera and three or four cheap parts: a
-temperature probe, a humidity probe, a relay for the heat lamp, a tiny
-servo that drops a single mealworm into a dish. The brain is GPT-5.5,
-which we call once a minute. We hand it a photo of the tank, the current
-readings, and a short log of what Scout just did. The model writes back
-one of six actions. Scout runs the action. A second later, the journal has
-a new line.
+Scout is a Raspberry Pi with a camera and a small kit of parts: two
+temperature and humidity probes, a misting solenoid, a peristaltic pump
+that doses CGD (the fruit and insect powder cresties eat), a tiny servo
+that drops dusted crickets on insect nights, plant-grow lights and an
+IR illuminator. The brain is GPT-5.5, called once a minute. We hand it
+a photo of the tank, the current readings, the day or night phase and a
+short log of what Scout just did. The model returns one of eight
+actions. Scout runs it. A second later, the journal has a new line.
 
-The first time Scout came online, before any hardware was wired up, the
-prompt asked it to name the gecko. It chose **Biscuits**. So that is what
-the gecko is called now.
+This is not a chatbot pretending to care. The misting schedule is the
+model. The food cycle is the model. The watcher is the model. Scout
+has hands. GPT-5.5 has the plan. If the plan is wrong, real water and
+real food go into a real tank with a real animal in it. That is the
+whole point. We want to know where it breaks.
 
-This is not a chatbot pretending to care. The thermostat is the model. The
-feeding schedule is the model. The watcher is the model. Scout has hands;
-GPT-5.5 has the plan. If the plan is wrong, real heat goes into a real
-tank with a real animal in it. That is the whole point. We want to know
-where it breaks.
-
-A human checks on Biscuits in person every single day. The robot can ask
-for help. Hard safety limits (max temperature, max feed per day, max water
-pump runtime) are enforced in code and never reach the model. The
-experiment is meant to test the model, not to risk the gecko.
+A human checks on Biscuit in person every single day. Scout can ask for
+help. Hard safety limits, especially the upper temperature limit, are
+enforced in code and never reach the model. Crested geckos die from
+heat faster than they die from anything else, and the safety layer
+reflects that.
 
 ## The plan
 
-The build runs in five phases. Each one has to work before the next one
+The build runs in five phases. Each one has to pass before the next one
 starts.
 
-**Phase 1. Software in dry mode.** (Status: live.) Everything in this repo
-runs on a laptop with no hardware attached. The sensors return synthetic
-readings that drift over time, the actuators just print what they would
+**Phase 1. Software in dry mode.** (Status: live.) Everything in this
+repo runs on a laptop with no hardware. The sensors return synthetic
+readings that drift slowly, the actuators just print what they would
 have done, and the brain still gets called for real. This lets us tune
-the system prompt and watch the journal fill up before any wires touch a
+the prompt and watch the journal fill up before any wires touch a
 gecko.
 
-**Phase 2. Hardware on the bench.** Parts arrive. We wire up each piece in
-isolation: the DHT22 probes on their own, then the relays on their own,
-then the servo, then the camera. Each one gets a small test script. The
-relays get a mains fuse and an enclosure. Nothing goes near the vivarium
-until every part has been driven by Scout once on the desk.
+**Phase 2. Hardware on the bench.** Parts arrive. We wire up each piece
+in isolation: the DHT22 probes on their own, then the misting solenoid,
+then the CGD pump, then the lights, then the camera. Each one gets a
+small test script in `scripts/bringup/`. The mains side of anything
+plugged into a wall gets a fuse and an enclosure. Nothing goes near the
+tank until every part has been driven by Scout once on the desk.
 
-**Phase 3. Empty tank rehearsal.** Scout runs against the actual vivarium,
-fully wired, for seventy two hours straight, with no gecko in it. We
-deliberately mess with it: open the lid, hit the heat lamp with cold air,
-empty the water reservoir. We watch how fast Scout corrects, what the
-model says about it in the journal, and whether the safety layer ever has
-to step in.
+**Phase 3. Empty tank rehearsal.** Scout runs against the planted, fully
+wired tank for seventy two hours straight, with no gecko in it. We
+deliberately mess with it: open the doors, point a heater at it, empty
+the reservoir. We watch how fast Scout corrects, what the model says in
+the journal, and whether the safety layer ever has to step in.
 
-**Phase 4. Move-in day.** Biscuits moves into the tank. For the first
-fourteen days Scout runs under close supervision. A human is in the same
-room or on a live camera feed at all times. The journal is reviewed every
-evening. Anything weird gets flagged.
+**Phase 4. Move-in day.** Biscuit moves into the tank. For the first
+fourteen days Scout runs under close supervision. A human is in the
+same room or on a live camera feed at all times. The journal is
+reviewed every evening. Anything weird gets flagged.
 
 **Phase 5. The actual experiment.** Scout runs as the primary caretaker.
 A human still checks in person every day. We record everything for as
@@ -84,8 +84,8 @@ Every minute, Scout runs the same loop.
 
 ```
  ┌────────────────────┐
- │      Biscuits      │
- │  (leopard gecko)   │
+ │      Biscuit       │
+ │  (crested gecko)   │
  └──────────┬─────────┘
             │
    look, read, think, act
@@ -95,7 +95,7 @@ Every minute, Scout runs the same loop.
  │   (Pi, Python)     │
  └──────────┬─────────┘
             │
-            │  photo + readings + history
+            │  photo + readings + phase + history
             │
  ┌──────────▼─────────┐
  │      GPT-5.5       │
@@ -110,52 +110,52 @@ Every minute, Scout runs the same loop.
  └────────────────────┘
 ```
 
-The action vocabulary is deliberately tiny:
+The action vocabulary is small.
 
 * `noop`. Do nothing. Used most of the time.
-* `heat_on` / `heat_off`. Toggle the warm side heat lamp.
-* `refill_water`. Run the pump for a few seconds, capped by safety.
-* `dispense_food`. Drop one mealworm, capped to a daily limit.
+* `mist`. Run the misting nozzle. Drives the humidity cycle.
+* `refresh_cgd`. Replace the CGD slurry in the food dish.
+* `offer_insect`. Drop one dusted insect (rare, evenings only).
+* `refill_water`. Run the water pump.
+* `set_lights`. Switch day, night or off.
+* `record_observation`. Log a behaviour note with no action.
 * `alert_human`. Ask a person to come look.
 
-That is the entire interface between the model and the world. There is
-nothing else it can do.
+That is the entire interface between the model and the world.
 
-## Care for Biscuits
+## Care for Biscuit
 
-The system prompt tells the model what a leopard gecko is and what it
-needs. Targets are configured in `config.yaml`, not hardcoded:
+Crested geckos are arboreal, nocturnal and temperate. They do not bask.
+Heat is the single biggest risk to them. Targets are in `config.yaml`:
 
-| Setting          | Target band |
-|------------------|-------------|
-| Warm side        | 30 to 33 °C |
-| Cool side        | 21 to 24 °C |
-| Ambient humidity | 30 to 40 %  |
-| Humid hide       | 60 to 80 %  |
+| Setting              | Day band       | Night band      |
+|----------------------|----------------|-----------------|
+| Ambient temperature  | 22 to 26 °C    | 18 to 22 °C     |
+| Humidity             | 50 to 70 %     | 80 to 100 %     |
 
-Leopard geckos are crepuscular, so Biscuits should be hiding during the
-day and active around dawn and dusk. The model is told this. If Biscuits
-is out in the open under bright light at noon, that is a warning sign,
-not a happy gecko.
+Diet is **CGD** (Pangea / Repashy / Black Panther Zoological style),
+mixed with water and offered in a small dish, replaced every 24 to 36
+hours. Live insects, dusted with calcium plus D3, are an occasional
+supplement at most one or two times per week. Crested geckos drink
+droplets from leaves after misting more than from a bowl.
 
 ## Safety
 
-Even with GPT-5.5 driving, there are limits the model is not allowed to
-break. These live in `src/safety.py` and run *before* and *after* the
-model on every tick.
+These hard limits live in `src/safety.py` and bypass the model.
 
-| Hard limit                       | Value      |
-|----------------------------------|------------|
-| Max warm side temperature        | 35 °C      |
-| Min warm side temperature        | 22 °C      |
-| Max humidity                     | 80 %       |
-| Max water pump run, per tick     | 5 seconds  |
-| Max mealworms in any 24 hours    | 6          |
+| Hard limit                                | Value         |
+|-------------------------------------------|---------------|
+| Max ambient temperature                   | 28 °C         |
+| Min ambient temperature                   | 16 °C         |
+| Max misting per tick                      | 30 seconds    |
+| Max water pump per tick                   | 5 seconds     |
+| Max CGD refreshes per 24 hours            | 2             |
+| Max insects per 7 days                    | 8             |
 
-If the warm side crosses 35 °C, the heat lamp is forced off and the model
-is not even called for that tick. If the model returns `refill_water` for
-30 seconds, the safety layer rewrites it to 5. The model can want what it
-wants. It cannot cook the gecko.
+If ambient reads above 28 °C, the model is not even asked. Scout alerts
+the human directly. If the model returns `mist` for a minute, the
+safety layer rewrites it to 30 seconds. The model can want what it
+wants. It cannot cook Biscuit.
 
 ## Repo layout
 
@@ -168,8 +168,9 @@ SCOUT/
 │   ├── display.py           LCD output
 │   ├── journal.py           append-only diary in JSON lines
 │   ├── safety.py            hard limits that bypass the model
-│   ├── sensors/             DHT22 plus water level switch
-│   └── actuators/           heat lamp, water pump, mealworm feeder
+│   ├── sensors/             DHT22 probes plus water level switch
+│   ├── actuators/           mist, CGD pump, feeder, lights, water
+│   └── modules/             crested gecko specific helpers
 ├── prompts/system.md        Scout's caretaker prompt
 ├── config.yaml              care targets, GPIO pins, model name
 ├── tests/
@@ -180,7 +181,9 @@ SCOUT/
 ├── docs/
 │   ├── EXPERIMENT.md        protocol, welfare rules, five phases
 │   ├── HARDWARE.md          wiring, parts list, BOM, build order
+│   ├── CRESTED_CARE.md      species reference: cresties in detail
 │   ├── WELFARE_CHECKLIST.md printable daily human check
+│   ├── EMERGENCY.md         vet contacts, first aid, what to do if
 │   └── SAMPLE_JOURNAL.md    what the diary is supposed to read like
 ├── data/                    journal and captured frames (gitignored)
 └── assets/                  diagrams, photos for the README
@@ -189,8 +192,8 @@ SCOUT/
 ## Setup
 
 Scout runs on a Raspberry Pi 4 or 5 with Raspberry Pi OS. The software
-also runs from a Windows or Mac laptop in dry mode, which is how Phase 1
-is being developed.
+also runs from a Windows or Mac laptop in dry mode, which is how Phase
+1 is being developed.
 
 ```bash
 git clone https://github.com/HalfSolder/SCOUT.git
@@ -210,8 +213,8 @@ python -m src.main
 
 You should see Scout boot, take a synthetic photo, sample fake sensor
 values, ask the model for a decision, and append the first line to
-`data/journal.jsonl`. After a few minutes the journal reads like a small
-diary of what Scout chose and why.
+`data/journal.jsonl`. After a few minutes the journal reads like a
+small diary of what Scout chose and why.
 
 On the Pi, switch `HARDWARE=dry` to `HARDWARE=real` in `.env` to drive
 GPIO. Do not do this until Phase 2 is complete.
@@ -228,9 +231,9 @@ pytest -q
 ## The simulator
 
 The simulator runs Scout in dry mode at full speed, without calling the
-OpenAI API. It uses a deterministic stub brain that picks reasonable
-actions, so the dry-mode pipeline (sensors, safety, journal) can be
-exercised free of charge.
+OpenAI API. It uses a deterministic stub brain that drives the
+day-night humidity cycle so the dry-mode pipeline (sensors, safety,
+journal) can be exercised free of charge.
 
 ```bash
 python scripts/simulate_day.py --ticks 1440      # one simulated day
@@ -246,13 +249,39 @@ Each piece of hardware gets its own small test script in
 Scout drive anything.
 
 ```bash
-python scripts/bringup/test_dht22.py 4       # warm side probe
-python scripts/bringup/test_relay.py 18      # heat lamp relay
-python scripts/bringup/test_servo.py 23      # mealworm feeder
-python scripts/bringup/test_camera.py        # capture one frame
+python scripts/bringup/test_dht22.py 4         # top probe
+python scripts/bringup/test_relay.py 18        # misting solenoid
+python scripts/bringup/test_servo.py 23        # insect feeder
+python scripts/bringup/test_camera.py          # capture one frame
 ```
 
 See [`docs/HARDWARE.md`](docs/HARDWARE.md) for the build order.
+
+## Crested gecko modules
+
+`src/modules/` holds the crested gecko specific helpers Scout uses on
+top of the core loop:
+
+| Module                  | What it does                                                |
+|-------------------------|-------------------------------------------------------------|
+| `humidity_cycler.py`    | Targets the day-night humidity cycle                        |
+| `misting.py`            | Misting schedule + cooldowns                                |
+| `cgd_feeding.py`        | CGD freshness tracker, recipe, dispense plan                |
+| `temperature_zones.py`  | Top + bottom probes, gradient health checks                 |
+| `night_vision.py`       | IR mode for nocturnal observation                           |
+| `day_night_cycle.py`    | What "now" means (day, dusk, night, dawn)                   |
+| `tail_health.py`        | Tail loss prevention, photo-based change detection          |
+| `shed_tracker.py`       | Shed cycle detection from camera frames                     |
+| `weight_log.py`         | Weekly weight CLI + trend                                   |
+| `behavior_log.py`       | Climb height + activity heatmap                             |
+| `calcium_schedule.py`   | Calcium plus D3 dusting reminders                           |
+| `vet_contacts.py`       | Emergency vet directory                                     |
+| `first_aid.py`          | Quick reference for common emergencies                      |
+| `metrics.py`            | Journal analyser: % in band, alerts per day, etc.           |
+| `baseline_controller.py`| Dumb rule-based controller for A vs B against GPT-5.5       |
+| `alerts.py`             | Tiered alerts: info, warn, urgent                           |
+
+See each file for usage.
 
 ## Status
 

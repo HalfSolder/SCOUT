@@ -1,42 +1,65 @@
-# Scout. Habitat configuration for Biscuits the leopard gecko.
+# Scout. Habitat configuration for Biscuit the crested gecko.
 
-species: leopard_gecko
+species: crested_gecko
+species_latin: Correlophus ciliatus
+animal_name: Biscuit
 
 # Temperature is measured in degrees Celsius.
 # These are the values the model is told to aim for. They are NOT the
 # hard safety limits. Those live in src/safety.py.
+#
+# Crested geckos are temperate, not desert. They do not need a heat lamp
+# in a normal indoor room. Above ~27 C is dangerous. Below ~16 C is too
+# cold for long. The goal is a mild gradient, not a basking spot.
 targets:
-  warm_side_c: [30, 33]      # warm hide / basking
-  cool_side_c: [21, 24]      # cool side
-  humidity_pct: [30, 40]     # ambient
-  humid_hide_pct: [60, 80]   # the small humid hide (shedding aid)
+  ambient_day_c: [22, 26]
+  ambient_night_c: [18, 22]
 
-# Hard safety limits. If readings cross these, src/safety.py overrides the
-# model and either cuts power or alerts a human.
+  # Crested geckos need a humidity CYCLE, not a constant value. The tank
+  # should spike to 80-100 % after the evening misting and drop to
+  # 50-70 % during the day. Constant high humidity rots plants and
+  # invites bacterial infections.
+  humidity_day_pct: [50, 70]
+  humidity_night_pct: [80, 100]
+
+# Hard safety limits. If readings cross these, src/safety.py overrides
+# the model and either alerts a human or refuses an action.
 safety:
-  max_warm_c: 35
-  min_warm_c: 22
-  max_humidity_pct: 80
-  max_mealworms_per_day: 6
-  max_water_pump_seconds_per_tick: 5
+  max_ambient_c: 28           # cresties die above ~30 C, do not push it
+  min_ambient_c: 16
+  max_humidity_pct_extended: 90   # ok for hours after misting, not for days
+  min_humidity_pct_extended: 40   # below this for long means dehydration
+  max_mist_seconds_per_tick: 30
+  max_cgd_refreshes_per_day: 2
+  max_insects_per_week: 8
 
 # How often the brain ticks, in seconds.
+# 60 s tick is fine while we are calibrating. For crested gecko duty
+# 300 s (5 min) is probably enough and 5x cheaper, switch later.
 tick_seconds: 60
 
 # Which OpenAI model to use.
 model: gpt-5.5
 
+# Day / night schedule (24h clock, local time).
+day_starts_hour: 8
+night_starts_hour: 20
+
 # Camera resolution for the per-tick snapshot.
 camera:
   width: 1024
   height: 768
+  night_vision: true        # crested geckos are nocturnal; IR helps
 
 # GPIO pin numbers (BCM). Confirm before powering anything on.
 pins:
-  dht22_data: 4              # temperature + humidity probe (warm side)
-  dht22_cool_data: 17        # temperature + humidity probe (cool side)
-  heat_lamp_relay: 18        # ceramic heat emitter relay
-  water_pump_relay: 22       # peristaltic pump
-  feeder_servo: 23           # mealworm feeder servo
-  water_level_switch: 24     # float switch in the reservoir
-  lcd_backlight: 25          # display backlight enable
+  dht22_top_data: 4               # top of arboreal enclosure
+  dht22_bottom_data: 17           # near ground
+  misting_solenoid_relay: 18      # opens the misting nozzle
+  fogger_relay: 27                # ultrasonic fogger (optional)
+  cgd_pump_relay: 22              # peristaltic pump for CGD slurry
+  insect_feeder_servo: 23         # cricket / roach hopper
+  water_pump_relay: 5             # fresh-water dish top up
+  water_level_switch: 24
+  day_lights_relay: 25            # plant grow lights / low UVB
+  ir_lamp_relay: 6                # IR night vision illuminator
