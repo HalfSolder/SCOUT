@@ -1,0 +1,42 @@
+# gecko-keeper — habitat configuration
+
+species: leopard_gecko
+
+# Temperature is measured in degrees Celsius.
+# These are the values the model is told to aim for. They are NOT the
+# hard safety limits — those live in src/safety.py.
+targets:
+  warm_side_c: [30, 33]      # warm hide / basking
+  cool_side_c: [21, 24]      # cool side
+  humidity_pct: [30, 40]     # ambient
+  humid_hide_pct: [60, 80]   # the small humid hide (shedding aid)
+
+# Hard safety limits. If readings cross these, src/safety.py overrides the
+# model and either cuts power or alerts a human.
+safety:
+  max_warm_c: 35
+  min_warm_c: 22
+  max_humidity_pct: 80
+  max_mealworms_per_day: 6
+  max_water_pump_seconds_per_tick: 5
+
+# How often the brain ticks, in seconds.
+tick_seconds: 60
+
+# Which OpenAI model to use.
+model: gpt-5.5
+
+# Camera resolution for the per-tick snapshot.
+camera:
+  width: 1024
+  height: 768
+
+# GPIO pin numbers (BCM). Confirm before powering anything on.
+pins:
+  dht22_data: 4              # temperature + humidity probe (warm side)
+  dht22_cool_data: 17        # temperature + humidity probe (cool side)
+  heat_lamp_relay: 18        # ceramic heat emitter relay
+  water_pump_relay: 22       # peristaltic pump
+  feeder_servo: 23           # mealworm feeder servo
+  water_level_switch: 24     # float switch in the reservoir
+  lcd_backlight: 25          # display backlight enable
