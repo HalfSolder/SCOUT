@@ -1,4 +1,4 @@
-"""GPT-5.5 brain.
+"""Grok brain.
 
 Each tick the brain receives:
   - The current sensor readings.
@@ -7,6 +7,9 @@ Each tick the brain receives:
   - Whether it is currently day or night.
 
 It must return a structured decision: an action and a one-line reasoning.
+
+Uses xAI's OpenAI-compatible API. The `openai` Python SDK is pointed at
+`https://api.x.ai/v1` and supplied an `XAI_API_KEY`.
 """
 
 from __future__ import annotations
@@ -30,16 +33,22 @@ VALID_ACTIONS = {
 }
 
 
+XAI_BASE_URL = "https://api.x.ai/v1"
+
+
 class Brain:
     def __init__(self, model: str, system_prompt_path: Path, config: dict):
         self.model = model
         self.config = config
-        self.client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+        self.client = OpenAI(
+            api_key=os.environ["XAI_API_KEY"],
+            base_url=XAI_BASE_URL,
+        )
         self.system_prompt = system_prompt_path.read_text(encoding="utf-8")
 
     def decide(self, readings: dict, frame_b64: str, history: list[dict],
                is_night: bool) -> dict:
-        """Ask GPT-5.5 what to do this tick."""
+        """Ask Grok what to do this tick."""
 
         user_payload = {
             "readings": readings,

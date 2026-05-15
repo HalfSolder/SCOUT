@@ -25,7 +25,7 @@ from src.sensors import read_all
 
 
 def stub_brain(readings: dict, targets: dict, tick_index: int, ticks_per_day: int) -> dict:
-    """A boring, rule-based stand-in for GPT-5.5, on crested gecko schedule."""
+    """A boring, rule-based stand-in for Grok, on crested gecko schedule."""
     hour = (tick_index % ticks_per_day) * 24 / ticks_per_day
     is_night = hour < 8 or hour >= 20
 

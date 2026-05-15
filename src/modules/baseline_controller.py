@@ -1,4 +1,4 @@
-"""Dumb baseline controller, for comparison against GPT-5.5.
+"""Dumb baseline controller, for comparison against Grok.
 
 To know whether the language model actually helps, we need a non-LLM
 baseline. This module is that baseline. It is intentionally boring:
@@ -12,7 +12,7 @@ baseline. This module is that baseline. It is intentionally boring:
   - Alert human when ambient > 27 C.
 
 Same action vocabulary as the brain. Same journal format. Run it for
-a week, then run GPT-5.5 for a week, then compare with metrics.py.
+a week, then run Grok 4.1 Fast for a week, then compare with metrics.py.
 """
 
 from __future__ import annotations

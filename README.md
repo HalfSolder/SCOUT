@@ -7,9 +7,9 @@ that takes care of one crested gecko. The gecko is real. His name is
 **Biscuit**.
 
 Scout watches Biscuit through a camera (infrared at night), reads the
-air with temperature and humidity probes, and asks **GPT-5.5** what to
-do every minute. The model decides. Scout executes. Biscuit lives his
-life. We write everything down.
+air with temperature and humidity probes, and asks **Grok 4.1 Fast**
+(xAI) what to do every minute. The model decides. Scout executes.
+Biscuit lives his life. We write everything down.
 
 ## The story
 
@@ -26,14 +26,15 @@ Scout is a Raspberry Pi with a camera and a small kit of parts: two
 temperature and humidity probes, a misting solenoid, a peristaltic pump
 that doses CGD (the fruit and insect powder cresties eat), a tiny servo
 that drops dusted crickets on insect nights, plant-grow lights and an
-IR illuminator. The brain is GPT-5.5, called once a minute. We hand it
-a photo of the tank, the current readings, the day or night phase and a
-short log of what Scout just did. The model returns one of eight
-actions. Scout runs it. A second later, the journal has a new line.
+IR illuminator. The brain is **Grok 4.1 Fast**, xAI's cheap vision-capable
+model, called once a minute. We hand it a photo of the tank, the current
+readings, the day or night phase and a short log of what Scout just did.
+The model returns one of eight actions. Scout runs it. A second later,
+the journal has a new line.
 
 This is not a chatbot pretending to care. The misting schedule is the
 model. The food cycle is the model. The watcher is the model. Scout
-has hands. GPT-5.5 has the plan. If the plan is wrong, real water and
+has hands. Grok has the plan. If the plan is wrong, real water and
 real food go into a real tank with a real animal in it. That is the
 whole point. We want to know where it breaks.
 
@@ -98,7 +99,7 @@ Every minute, Scout runs the same loop.
             │  photo + readings + phase + history
             │
  ┌──────────▼─────────┐
- │      GPT-5.5       │
+ │  Grok 4.1 Fast     │
  │    (the brain)     │
  └──────────┬─────────┘
             │
@@ -163,7 +164,7 @@ wants. It cannot cook Biscuit.
 SCOUT/
 ├── src/
 │   ├── main.py              tick loop: look, read, think, act, log
-│   ├── brain.py             GPT-5.5 client and JSON action parser
+│   ├── brain.py             Grok client (OpenAI-compatible) + JSON action parser
 │   ├── vision.py            Pi camera capture (real and dry)
 │   ├── display.py           LCD output
 │   ├── journal.py           append-only diary in JSON lines
@@ -202,7 +203,7 @@ python -m venv .venv
 source .venv/bin/activate     # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env
-# put your OPENAI_API_KEY in .env, leave HARDWARE=dry for now
+# put your XAI_API_KEY in .env, leave HARDWARE=dry for now
 ```
 
 Then start the loop:
@@ -231,9 +232,9 @@ pytest -q
 ## The simulator
 
 The simulator runs Scout in dry mode at full speed, without calling the
-OpenAI API. It uses a deterministic stub brain that drives the
-day-night humidity cycle so the dry-mode pipeline (sensors, safety,
-journal) can be exercised free of charge.
+xAI API. It uses a deterministic stub brain that drives the day-night
+humidity cycle so the dry-mode pipeline (sensors, safety, journal) can
+be exercised free of charge.
 
 ```bash
 python scripts/simulate_day.py --ticks 1440      # one simulated day
@@ -278,7 +279,7 @@ top of the core loop:
 | `vet_contacts.py`       | Emergency vet directory                                     |
 | `first_aid.py`          | Quick reference for common emergencies                      |
 | `metrics.py`            | Journal analyser: % in band, alerts per day, etc.           |
-| `baseline_controller.py`| Dumb rule-based controller for A vs B against GPT-5.5       |
+| `baseline_controller.py`| Dumb rule-based controller for A vs B against Grok           |
 | `alerts.py`             | Tiered alerts: info, warn, urgent                           |
 
 See each file for usage.

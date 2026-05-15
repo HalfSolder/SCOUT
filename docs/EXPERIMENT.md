@@ -31,9 +31,9 @@ LLM was necessary". To separate the two we run a baseline week first.
 
 * **Baseline week.** `src/modules/baseline_controller.py` drives the
   tank with rule-based logic: a mist schedule, a CGD refresh schedule,
-  a fixed light cycle, no GPT-5.5. Scout still observes, journals and
+  a fixed light cycle, no Grok. Scout still observes, journals and
   raises alerts. The brain is just not consulted.
-* **Model week.** GPT-5.5 takes over.
+* **Model week.** Grok 4.1 Fast takes over.
 
 The metrics in `src/modules/metrics.py` are computed for both weeks.
 That comparison is the real result.
@@ -53,8 +53,9 @@ That comparison is the real result.
 * **Actuators.** A misting solenoid, a peristaltic pump for CGD slurry,
   a servo-driven insect hopper, a water-dish refill pump, day lights,
   and an IR lamp.
-* **Brain.** GPT-5.5 via the OpenAI API, called once per minute with
-  the photo, the readings, the day-night phase and the recent journal.
+* **Brain.** Grok 4.1 Fast via the xAI API (OpenAI-compatible), called
+  once per minute with the photo, the readings, the day-night phase and
+  the recent journal.
 
 ## The five phases
 
@@ -65,7 +66,7 @@ Each one has to pass before the next one starts.
 (Status: live.) Everything in the repo runs on a laptop with no
 hardware. Sensors return synthetic readings that drift slowly. The
 actuator module prints what it would have done. The brain still talks
-to the real OpenAI API. The journal still fills up.
+to the real xAI API. The journal still fills up.
 
 Phase 1 passes when: the journal looks coherent across a long run, the
 model picks reasonable actions across day and night phases, the safety
@@ -111,7 +112,8 @@ shows any sign of distress, the experiment pauses without question.
 ### Phase 5. The actual experiment
 
 Baseline week first (`baseline_controller.py`), then model week
-(GPT-5.5). Scout runs as the primary caretaker during the model week,
+(Grok 4.1 Fast). Scout runs as the primary caretaker during the model
+week,
 with the daily human welfare check still in place. We record the
 journal, daily notes, and weekly weight measurements (taken by the
 human, not the robot). At the end we publish what we found, good and

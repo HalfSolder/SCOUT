@@ -38,8 +38,9 @@ safety:
 # 300 s (5 min) is probably enough and 5x cheaper, switch later.
 tick_seconds: 60
 
-# Which OpenAI model to use.
-model: gpt-5.5
+# Which xAI Grok model to use. See https://docs.x.ai for current names.
+# grok-4-fast supports vision (the image input we send each tick).
+model: grok-4-fast
 
 # Day / night schedule (24h clock, local time).
 day_starts_hour: 8

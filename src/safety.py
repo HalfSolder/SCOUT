@@ -1,6 +1,6 @@
 """Hard safety limits.
 
-The brain is GPT-5.5, but if the model misjudges, Biscuit gets hurt. So
+The brain is Grok, but if the model misjudges, Biscuit gets hurt. So
 some rules do not go through the model at all.
 
 Crested geckos die from heat much faster than they die from cold. The
