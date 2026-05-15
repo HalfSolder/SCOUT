@@ -1,113 +1,189 @@
 # Scout
 
-> An experiment: can a robot, on its own, keep a living creature alive and well?
+> Can a robot, on its own, look after a living creature?
 
-**Scout** is a Raspberry Pi robot that looks after a single leopard gecko —
-named **Biscuits**, a name Scout gave him on day one. Scout watches Biscuits
-through a camera, reads the environment through a small set of sensors, and
-uses **GPT-5.5** as the deciding mind. Every minute, the model is given a
-clean picture of the tank and chooses what to do next — turn on the heat,
-top up the water, drop a mealworm, dim the lights, or just keep watching.
+This repo is the brain and body of **Scout**, a small Raspberry Pi robot
+that takes care of one leopard gecko. The gecko is real. His name is
+**Biscuits**. Scout chose the name on day one.
 
-Nothing is hardcoded as a control loop. The thermostat is the model. The
-feeding schedule is the model. Scout has hands; GPT-5.5 has the plan.
+Scout watches Biscuits through a camera, reads the air with a couple of
+sensors, and asks **GPT-5.5** what to do every minute. The model decides.
+Scout executes. Biscuits lives his life. We write everything down.
 
-The whole thing is logged so we can read it back like a diary.
+## The story
 
----
+I wanted to know if a language model could keep something alive.
 
-## The experiment
+Most AI demos run inside a text box. The agent picks a winning move, books
+a flight, writes a function. Nothing in the world actually changes. If the
+model is wrong, you close the tab. There is no animal on the other side.
 
-| | |
-|---|---|
-| **Subject** | One leopard gecko (*Eublepharis macularius*), named **Biscuits** by Scout |
-| **Caretaker** | **Scout** — a Raspberry Pi running this repo, with GPT-5.5 as the decision-maker |
-| **Question** | Can a language model, given the right tools, keep a living animal in good health without a human in the loop? |
-| **Duration** | Open-ended, with daily human welfare checks |
-| **Owner** | [@HalfSolder](https://github.com/HalfSolder) |
+So we built one with an animal on the other side.
 
-See [`docs/EXPERIMENT.md`](docs/EXPERIMENT.md) for the protocol and welfare
-safeguards. **A human checks on Biscuits every day.** Scout can ask for
-help, and there are hard safety overrides that don't go through the model
-at all.
+Scout is a Raspberry Pi with a camera and three or four cheap parts: a
+temperature probe, a humidity probe, a relay for the heat lamp, a tiny
+servo that drops a single mealworm into a dish. The brain is GPT-5.5,
+which we call once a minute. We hand it a photo of the tank, the current
+readings, and a short log of what Scout just did. The model writes back
+one of six actions. Scout runs the action. A second later, the journal has
+a new line.
 
----
+The first time Scout came online, before any hardware was wired up, the
+prompt asked it to name the gecko. It chose **Biscuits**. So that is what
+the gecko is called now.
 
-## How it works
+This is not a chatbot pretending to care. The thermostat is the model. The
+feeding schedule is the model. The watcher is the model. Scout has hands;
+GPT-5.5 has the plan. If the plan is wrong, real heat goes into a real
+tank with a real animal in it. That is the whole point. We want to know
+where it breaks.
+
+A human checks on Biscuits in person every single day. The robot can ask
+for help. Hard safety limits (max temperature, max feed per day, max water
+pump runtime) are enforced in code and never reach the model. The
+experiment is meant to test the model, not to risk the gecko.
+
+## The plan
+
+The build runs in five phases. Each one has to work before the next one
+starts.
+
+**Phase 1. Software in dry mode.** (Status: live.) Everything in this repo
+runs on a laptop with no hardware attached. The sensors return synthetic
+readings that drift over time, the actuators just print what they would
+have done, and the brain still gets called for real. This lets us tune
+the system prompt and watch the journal fill up before any wires touch a
+gecko.
+
+**Phase 2. Hardware on the bench.** Parts arrive. We wire up each piece in
+isolation: the DHT22 probes on their own, then the relays on their own,
+then the servo, then the camera. Each one gets a small test script. The
+relays get a mains fuse and an enclosure. Nothing goes near the vivarium
+until every part has been driven by Scout once on the desk.
+
+**Phase 3. Empty tank rehearsal.** Scout runs against the actual vivarium,
+fully wired, for seventy two hours straight, with no gecko in it. We
+deliberately mess with it: open the lid, hit the heat lamp with cold air,
+empty the water reservoir. We watch how fast Scout corrects, what the
+model says about it in the journal, and whether the safety layer ever has
+to step in.
+
+**Phase 4. Move-in day.** Biscuits moves into the tank. For the first
+fourteen days Scout runs under close supervision. A human is in the same
+room or on a live camera feed at all times. The journal is reviewed every
+evening. Anything weird gets flagged.
+
+**Phase 5. The actual experiment.** Scout runs as the primary caretaker.
+A human still checks in person every day. We record everything for as
+long as the experiment runs. At the end we publish what we found, good
+and bad.
+
+## How Scout works
+
+Every minute, Scout runs the same loop.
 
 ```
-       ┌────────────────────┐
-       │      Biscuits      │
-       │  (leopard gecko)   │
-       └─────────┬──────────┘
-                 │
-   ┌─────────────┼──────────────┐
-   │             │              │
-camera        sensors        actuators
-   │             │              │
-   └─────────────┼──────────────┘
-                 │
-        ┌────────▼─────────┐
-        │      Scout       │
-        │   (Pi, Python)   │
-        └────────┬─────────┘
-                 │
-        ┌────────▼─────────┐
-        │     GPT-5.5      │
-        │   (the brain)    │
-        └────────┬─────────┘
-                 │
-        ┌────────▼─────────┐
-        │   LCD display    │
-        │  (what it sees,  │
-        │ what it's doing) │
-        └──────────────────┘
+ ┌────────────────────┐
+ │      Biscuits      │
+ │  (leopard gecko)   │
+ └──────────┬─────────┘
+            │
+   look, read, think, act
+            │
+ ┌──────────▼─────────┐
+ │       Scout        │
+ │   (Pi, Python)     │
+ └──────────┬─────────┘
+            │
+            │  photo + readings + history
+            │
+ ┌──────────▼─────────┐
+ │      GPT-5.5       │
+ │    (the brain)     │
+ └──────────┬─────────┘
+            │
+            │  one structured action
+            │
+ ┌──────────▼─────────┐
+ │  actuators + log   │
+ │  + LCD display     │
+ └────────────────────┘
 ```
 
-Every tick (default: 60 seconds) Scout:
+The action vocabulary is deliberately tiny:
 
-1. **Looks** — takes a photo of the tank with the Pi camera.
-2. **Reads** — samples temperature, humidity, water level.
-3. **Thinks** — sends the readings, a recent history, and the photo to
-   GPT-5.5 along with the care guidelines for a leopard gecko.
-4. **Acts** — the model returns a structured action (heat on/off, dispense
-   mealworm, refill water, nothing). Scout executes it.
-5. **Writes it down** — every observation and decision is appended to
-   `data/journal.jsonl`.
-6. **Shows it** — the LCD shows the current photo, the chosen action, and
-   a short sentence from the model about *why*.
+* `noop`. Do nothing. Used most of the time.
+* `heat_on` / `heat_off`. Toggle the warm side heat lamp.
+* `refill_water`. Run the pump for a few seconds, capped by safety.
+* `dispense_food`. Drop one mealworm, capped to a daily limit.
+* `alert_human`. Ask a person to come look.
 
----
+That is the entire interface between the model and the world. There is
+nothing else it can do.
+
+## Care for Biscuits
+
+The system prompt tells the model what a leopard gecko is and what it
+needs. Targets are configured in `config.yaml`, not hardcoded:
+
+| Setting          | Target band |
+|------------------|-------------|
+| Warm side        | 30 to 33 °C |
+| Cool side        | 21 to 24 °C |
+| Ambient humidity | 30 to 40 %  |
+| Humid hide       | 60 to 80 %  |
+
+Leopard geckos are crepuscular, so Biscuits should be hiding during the
+day and active around dawn and dusk. The model is told this. If Biscuits
+is out in the open under bright light at noon, that is a warning sign,
+not a happy gecko.
+
+## Safety
+
+Even with GPT-5.5 driving, there are limits the model is not allowed to
+break. These live in `src/safety.py` and run *before* and *after* the
+model on every tick.
+
+| Hard limit                       | Value      |
+|----------------------------------|------------|
+| Max warm side temperature        | 35 °C      |
+| Min warm side temperature        | 22 °C      |
+| Max humidity                     | 80 %       |
+| Max water pump run, per tick     | 5 seconds  |
+| Max mealworms in any 24 hours    | 6          |
+
+If the warm side crosses 35 °C, the heat lamp is forced off and the model
+is not even called for that tick. If the model returns `refill_water` for
+30 seconds, the safety layer rewrites it to 5. The model can want what it
+wants. It cannot cook the gecko.
 
 ## Repo layout
 
 ```
 SCOUT/
 ├── src/
-│   ├── main.py              # tick loop — observe, think, act, log
-│   ├── brain.py             # GPT-5.5 client + tool calls
-│   ├── vision.py            # Pi camera capture
-│   ├── display.py           # LCD output
-│   ├── journal.py           # append-only decision log
-│   ├── safety.py            # hard limits that bypass the model
-│   ├── sensors/             # DHT22 (temp/humidity), water level
-│   └── actuators/           # heat lamp relay, water pump, feeder servo
-├── prompts/
-│   └── system.md            # Scout's caretaker prompt
-├── config.yaml              # care targets, pin numbers, model name
+│   ├── main.py              tick loop: look, read, think, act, log
+│   ├── brain.py             GPT-5.5 client and JSON action parser
+│   ├── vision.py            Pi camera capture (real and dry)
+│   ├── display.py           LCD output
+│   ├── journal.py           append-only diary in JSON lines
+│   ├── safety.py            hard limits that bypass the model
+│   ├── sensors/             DHT22 plus water level switch
+│   └── actuators/           heat lamp, water pump, mealworm feeder
+├── prompts/system.md        Scout's caretaker prompt
+├── config.yaml              care targets, GPIO pins, model name
 ├── docs/
-│   ├── EXPERIMENT.md        # protocol, welfare rules, daily checks
-│   └── HARDWARE.md          # wiring, parts list, BOM
-├── data/                    # journal + captured frames (gitignored)
-└── assets/                  # diagrams, photos for the README
+│   ├── EXPERIMENT.md        protocol, welfare rules, daily checks
+│   └── HARDWARE.md          wiring, parts list, BOM
+├── data/                    journal and captured frames (gitignored)
+└── assets/                  diagrams, photos for the README
 ```
-
----
 
 ## Setup
 
-> Scout runs on a Raspberry Pi 4 / 5 with Raspberry Pi OS. Development from
-> a Windows machine works fine — only the final `main.py` needs the Pi.
+Scout runs on a Raspberry Pi 4 or 5 with Raspberry Pi OS. The software
+also runs from a Windows or Mac laptop in dry mode, which is how Phase 1
+is being developed.
 
 ```bash
 git clone https://github.com/HalfSolder/SCOUT.git
@@ -116,44 +192,30 @@ python -m venv .venv
 source .venv/bin/activate     # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env
-# add your OPENAI_API_KEY to .env
+# put your OPENAI_API_KEY in .env, leave HARDWARE=dry for now
 ```
 
-To run the loop:
+Then start the loop:
 
 ```bash
 python -m src.main
 ```
 
-In **dry-run mode** (no real hardware), the sensors return fake readings and
-the actuators just log what they would have done. That's the default off the
-Pi. On the Pi, set `HARDWARE=real` in `.env`.
+You should see Scout boot, take a synthetic photo, sample fake sensor
+values, ask the model for a decision, and append the first line to
+`data/journal.jsonl`. After a few minutes the journal reads like a small
+diary of what Scout chose and why.
 
----
-
-## Safety
-
-Even though GPT-5.5 is the brain, the model is **not allowed to cook
-Biscuits**. `src/safety.py` enforces hard limits that run *before* the
-model's action is executed:
-
-- Heat lamp is force-cut if warm side > 35 °C.
-- Water pump max run time per tick is capped.
-- Feeder cannot dispense more than N mealworms per 24 hours.
-- All actions are gated on the daily human check-in being recent.
-
-If any hard limit trips, Scout pauses, lights up the LCD red, and
-[sends a notification](docs/EXPERIMENT.md#human-in-the-loop) to a human.
-
----
+On the Pi, switch `HARDWARE=dry` to `HARDWARE=real` in `.env` to drive
+GPIO. Do not do this until Phase 2 is complete.
 
 ## Status
 
-Early build. Hardware on order. The software runs end-to-end in dry-run
-against fake sensors, so the brain and the journal are exercisable from a
-laptop while the parts arrive.
+Phase 1 is live. The code in this repo runs end to end against fake
+sensors and a placeholder camera frame. The journal fills up. The brain
+behaves itself. The hardware is on order.
 
----
+Phase 2 starts when the parts arrive.
 
-*Built by [@HalfSolder](https://github.com/HalfSolder). Private repo —
-shared with collaborators to document the experiment.*
+Private repo, owned by [@HalfSolder](https://github.com/HalfSolder).
+Shared with collaborators who are following the experiment.

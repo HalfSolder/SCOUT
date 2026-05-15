@@ -7,8 +7,8 @@ some rules don't go through the model at all:
   - The water pump cannot run longer than N seconds per tick.
   - The feeder cannot drop more than N mealworms per 24 hours.
 
-`check()` runs BEFORE the model — it can short-circuit the tick with an
-override action. `gate()` runs AFTER the model — it sanitises whatever the
+`check()` runs BEFORE the model. It can short-circuit the tick with an
+override action. `gate()` runs AFTER the model. It sanitises whatever the
 model asked for.
 """
 

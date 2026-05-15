@@ -1,10 +1,10 @@
-# Scout — habitat configuration for Biscuits the leopard gecko
+# Scout. Habitat configuration for Biscuits the leopard gecko.
 
 species: leopard_gecko
 
 # Temperature is measured in degrees Celsius.
 # These are the values the model is told to aim for. They are NOT the
-# hard safety limits — those live in src/safety.py.
+# hard safety limits. Those live in src/safety.py.
 targets:
   warm_side_c: [30, 33]      # warm hide / basking
   cool_side_c: [21, 24]      # cool side

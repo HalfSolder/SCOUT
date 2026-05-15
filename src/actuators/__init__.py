@@ -1,4 +1,4 @@
-"""Actuators — heat lamp relay, water pump, mealworm feeder.
+"""Actuators. Heat lamp relay, water pump, mealworm feeder.
 
 In dry mode the actuators just print what they would do. In real mode they
 toggle GPIO pins.

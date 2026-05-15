@@ -2,7 +2,7 @@
 
 The real LCD on the Pi is driven via HDMI to a small touchscreen. The display
 module just writes the current state to a file (`data/display.txt`) and prints
-to stdout for now — a small GUI process can render that file in fullscreen.
+to stdout for now. A small GUI process can render that file in fullscreen.
 
 This keeps the brain decoupled from any specific display library so we can
 swap renderers (pygame, tkinter, framebuffer) without changing the loop.

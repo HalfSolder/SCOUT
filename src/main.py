@@ -50,7 +50,7 @@ def main() -> None:
     signal.signal(signal.SIGTERM, _stop)
 
     print(f"[scout] tick = {cfg['tick_seconds']}s, model = {cfg['model']}")
-    display.show_boot("Scout online — watching Biscuits")
+    display.show_boot("Scout online. Watching Biscuits.")
 
     while running:
         tick_started = time.time()
@@ -61,7 +61,7 @@ def main() -> None:
         # 2. READ
         readings = read_all(cfg["pins"])
 
-        # 3. SAFETY (pre-decision) — may force an override action.
+        # 3. SAFETY (pre-decision). May force an override action.
         override = safety.check(readings)
         if override is not None:
             journal.append(kind="safety_override", readings=readings, action=override)
