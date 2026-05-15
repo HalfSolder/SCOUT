@@ -1,16 +1,16 @@
-# gecko-keeper
+# Scout
 
-> An experiment: can a robot, on its own, keep a living animal alive and well?
+> An experiment: can a robot, on its own, keep a living creature alive and well?
 
-`gecko-keeper` is the brain, body and habitat controller for a Raspberry Pi
-robot that looks after a single leopard gecko. The robot watches the gecko
+**Scout** is a Raspberry Pi robot that looks after a single leopard gecko —
+named **Biscuits**, a name Scout gave him on day one. Scout watches Biscuits
 through a camera, reads the environment through a small set of sensors, and
 uses **GPT-5.5** as the deciding mind. Every minute, the model is given a
-clean picture of the habitat and chooses what to do next — turn on the heat,
+clean picture of the tank and chooses what to do next — turn on the heat,
 top up the water, drop a mealworm, dim the lights, or just keep watching.
 
 Nothing is hardcoded as a control loop. The thermostat is the model. The
-feeding schedule is the model. The robot has hands; GPT-5.5 has the plan.
+feeding schedule is the model. Scout has hands; GPT-5.5 has the plan.
 
 The whole thing is logged so we can read it back like a diary.
 
@@ -20,14 +20,14 @@ The whole thing is logged so we can read it back like a diary.
 
 | | |
 |---|---|
-| **Subject** | One leopard gecko (*Eublepharis macularius*) |
-| **Caretaker** | A Raspberry Pi running `gecko-keeper`, with GPT-5.5 as the decision-maker |
+| **Subject** | One leopard gecko (*Eublepharis macularius*), named **Biscuits** by Scout |
+| **Caretaker** | **Scout** — a Raspberry Pi running this repo, with GPT-5.5 as the decision-maker |
 | **Question** | Can a language model, given the right tools, keep a living animal in good health without a human in the loop? |
 | **Duration** | Open-ended, with daily human welfare checks |
 | **Owner** | [@HalfSolder](https://github.com/HalfSolder) |
 
 See [`docs/EXPERIMENT.md`](docs/EXPERIMENT.md) for the protocol and welfare
-safeguards. **A human checks on the gecko every day.** The model can ask for
+safeguards. **A human checks on Biscuits every day.** Scout can ask for
 help, and there are hard safety overrides that don't go through the model
 at all.
 
@@ -37,7 +37,8 @@ at all.
 
 ```
        ┌────────────────────┐
-       │   leopard gecko    │
+       │      Biscuits      │
+       │  (leopard gecko)   │
        └─────────┬──────────┘
                  │
    ┌─────────────┼──────────────┐
@@ -47,7 +48,7 @@ camera        sensors        actuators
    └─────────────┼──────────────┘
                  │
         ┌────────▼─────────┐
-        │   gecko-keeper   │
+        │      Scout       │
         │   (Pi, Python)   │
         └────────┬─────────┘
                  │
@@ -63,14 +64,14 @@ camera        sensors        actuators
         └──────────────────┘
 ```
 
-Every tick (default: 60 seconds) the robot:
+Every tick (default: 60 seconds) Scout:
 
-1. **Looks** — takes a photo of the habitat with the Pi camera.
+1. **Looks** — takes a photo of the tank with the Pi camera.
 2. **Reads** — samples temperature, humidity, water level.
 3. **Thinks** — sends the readings, a recent history, and the photo to
    GPT-5.5 along with the care guidelines for a leopard gecko.
 4. **Acts** — the model returns a structured action (heat on/off, dispense
-   mealworm, refill water, nothing). The robot executes it.
+   mealworm, refill water, nothing). Scout executes it.
 5. **Writes it down** — every observation and decision is appended to
    `data/journal.jsonl`.
 6. **Shows it** — the LCD shows the current photo, the chosen action, and
@@ -81,7 +82,7 @@ Every tick (default: 60 seconds) the robot:
 ## Repo layout
 
 ```
-gecko-keeper/
+SCOUT/
 ├── src/
 │   ├── main.py              # tick loop — observe, think, act, log
 │   ├── brain.py             # GPT-5.5 client + tool calls
@@ -92,7 +93,7 @@ gecko-keeper/
 │   ├── sensors/             # DHT22 (temp/humidity), water level
 │   └── actuators/           # heat lamp relay, water pump, feeder servo
 ├── prompts/
-│   └── system.md            # the gecko's caretaker prompt
+│   └── system.md            # Scout's caretaker prompt
 ├── config.yaml              # care targets, pin numbers, model name
 ├── docs/
 │   ├── EXPERIMENT.md        # protocol, welfare rules, daily checks
@@ -105,12 +106,12 @@ gecko-keeper/
 
 ## Setup
 
-> The robot runs on a Raspberry Pi 4 / 5 with Raspberry Pi OS. Development
-> from a Windows machine works fine — only the final `main.py` needs the Pi.
+> Scout runs on a Raspberry Pi 4 / 5 with Raspberry Pi OS. Development from
+> a Windows machine works fine — only the final `main.py` needs the Pi.
 
 ```bash
-git clone git@github.com:HalfSolder/gecko-keeper.git
-cd gecko-keeper
+git clone https://github.com/HalfSolder/SCOUT.git
+cd SCOUT
 python -m venv .venv
 source .venv/bin/activate     # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
@@ -132,16 +133,16 @@ Pi. On the Pi, set `HARDWARE=real` in `.env`.
 
 ## Safety
 
-Even though GPT-5.5 is the brain, the model is **not allowed to cook the
-gecko**. `src/safety.py` enforces hard limits that run *before* the model's
-action is executed:
+Even though GPT-5.5 is the brain, the model is **not allowed to cook
+Biscuits**. `src/safety.py` enforces hard limits that run *before* the
+model's action is executed:
 
 - Heat lamp is force-cut if warm side > 35 °C.
 - Water pump max run time per tick is capped.
 - Feeder cannot dispense more than N mealworms per 24 hours.
 - All actions are gated on the daily human check-in being recent.
 
-If any hard limit trips, the robot pauses, lights up the LCD red, and
+If any hard limit trips, Scout pauses, lights up the LCD red, and
 [sends a notification](docs/EXPERIMENT.md#human-in-the-loop) to a human.
 
 ---

@@ -44,13 +44,13 @@ def main() -> None:
     def _stop(*_):
         nonlocal running
         running = False
-        print("\n[gecko-keeper] shutting down...")
+        print("\n[scout] shutting down...")
 
     signal.signal(signal.SIGINT, _stop)
     signal.signal(signal.SIGTERM, _stop)
 
-    print(f"[gecko-keeper] tick = {cfg['tick_seconds']}s, model = {cfg['model']}")
-    display.show_boot("gecko-keeper online")
+    print(f"[scout] tick = {cfg['tick_seconds']}s, model = {cfg['model']}")
+    display.show_boot("Scout online — watching Biscuits")
 
     while running:
         tick_started = time.time()
@@ -93,8 +93,8 @@ def main() -> None:
 
         _sleep_until(tick_started + cfg["tick_seconds"])
 
-    display.show_boot("gecko-keeper offline")
-    print("[gecko-keeper] stopped cleanly.")
+    display.show_boot("Scout offline")
+    print("[scout] stopped cleanly.")
 
 
 def _sleep_until(target_ts: float) -> None:
@@ -107,5 +107,5 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as exc:
-        print(f"[gecko-keeper] fatal: {exc}", file=sys.stderr)
+        print(f"[scout] fatal: {exc}", file=sys.stderr)
         raise

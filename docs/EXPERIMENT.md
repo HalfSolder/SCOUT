@@ -4,10 +4,10 @@
 
 Can a language model, given a body, keep an animal alive?
 
-Most "AI agent" demos run inside text. This one runs inside a tank. There is
-a real leopard gecko on the other side of the camera. The robot decides
-every minute what to do; GPT-5.5 is the decider; the consequences are not
-synthetic.
+Most "AI agent" demos run inside text. This one runs inside a tank. On the
+other side of the camera is a real leopard gecko named **Biscuits** —
+named by **Scout**, the robot, on day one. Scout decides every minute
+what to do; GPT-5.5 is the decider; the consequences are not synthetic.
 
 The goal is not to prove that a robot is *better* at gecko husbandry than a
 human. The goal is to find out whether a model with clear targets, working
@@ -16,13 +16,13 @@ where it breaks first.
 
 ## Setup
 
-- **Subject:** one healthy adult leopard gecko, sourced from a reputable
-  breeder, settled in its tank for at least 4 weeks before the experiment
-  starts.
+- **Subject:** Biscuits, one healthy adult leopard gecko, sourced from a
+  reputable breeder, settled in his tank for at least 4 weeks before the
+  experiment starts.
 - **Habitat:** a standard 60×45×45 cm vivarium with a warm side, a cool
   side, a dry hide, a humid hide, a water dish and a feeding dish.
-- **Robot:** a Raspberry Pi running `gecko-keeper`, an LCD that shows what
-  the robot is "thinking", a Pi camera pointed into the enclosure.
+- **Robot:** Scout — a Raspberry Pi running this repo, an LCD that shows
+  what Scout is "thinking", a Pi camera pointed into the enclosure.
 - **Sensors:** two DHT22 probes (warm side, cool side), a float switch on
   the water reservoir.
 - **Actuators:** a relay driving the ceramic heat emitter, a relay driving
@@ -46,13 +46,13 @@ chosen, and a one-line reasoning. From that we can later compute:
 
 This is the rule that keeps the experiment ethical:
 
-> **A human checks the gecko in person every day.** No exceptions.
+> **A human checks on Biscuits in person every day.** No exceptions.
 
-The robot can ask for help via the `alert_human` action; the human can also
-intervene at any time. If a hard safety limit trips, the robot pauses, the
+Scout can ask for help via the `alert_human` action; the human can also
+intervene at any time. If a hard safety limit trips, Scout pauses, the
 LCD goes red, and a notification fires (`NTFY_TOPIC` env var).
 
-The robot is not a substitute for a keeper. It is a keeper *with* one.
+Scout is not a substitute for a keeper. Scout is a keeper *with* one.
 
 ## Safety limits
 
@@ -67,18 +67,18 @@ These bypass the model entirely (`src/safety.py`):
 | Max mealworms per 24 hours | 6 |
 
 These numbers are conservative on purpose. If the model decides the warm
-side should be 40 °C, the gecko does not get a vote and neither does the
+side should be 40 °C, Biscuits does not get a vote and neither does the
 model.
 
 ## When the experiment ends
 
 The experiment ends when **any** of the following happen:
 
-- The gecko shows signs of stress that don't resolve within 24 hours.
-- The robot misjudges in a way that requires human override more than
-  twice in one day.
+- Biscuits shows signs of stress that don't resolve within 24 hours.
+- Scout misjudges in a way that requires human override more than twice
+  in one day.
 - We collect enough data to write the thing up.
 - The keeper (a human, [@HalfSolder](https://github.com/HalfSolder))
   decides we've learned what we wanted to learn.
 
-The gecko keeps living its life either way.
+Biscuits keeps living his life either way.

@@ -45,4 +45,4 @@ class Display:
         stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         text = f"{stamp}\n{body}\n"
         self.state_path.write_text(text, encoding="utf-8")
-        print(f"\n=== gecko-keeper @ {stamp} ===\n{body}")
+        print(f"\n=== Scout @ {stamp} ===\n{body}")
