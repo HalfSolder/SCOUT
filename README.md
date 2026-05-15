@@ -172,9 +172,16 @@ SCOUT/
 │   └── actuators/           heat lamp, water pump, mealworm feeder
 ├── prompts/system.md        Scout's caretaker prompt
 ├── config.yaml              care targets, GPIO pins, model name
+├── tests/
+│   └── test_safety.py       proves the safety layer behaves
+├── scripts/
+│   ├── simulate_day.py      fast-forward dry mode, no API calls
+│   └── bringup/             Phase 2 hardware test scripts
 ├── docs/
-│   ├── EXPERIMENT.md        protocol, welfare rules, daily checks
-│   └── HARDWARE.md          wiring, parts list, BOM
+│   ├── EXPERIMENT.md        protocol, welfare rules, five phases
+│   ├── HARDWARE.md          wiring, parts list, BOM, build order
+│   ├── WELFARE_CHECKLIST.md printable daily human check
+│   └── SAMPLE_JOURNAL.md    what the diary is supposed to read like
 ├── data/                    journal and captured frames (gitignored)
 └── assets/                  diagrams, photos for the README
 ```
@@ -209,13 +216,55 @@ diary of what Scout chose and why.
 On the Pi, switch `HARDWARE=dry` to `HARDWARE=real` in `.env` to drive
 GPIO. Do not do this until Phase 2 is complete.
 
+## Tests
+
+The safety layer is the only code whose job is to be wrong about the
+model. There are unit tests for it.
+
+```bash
+pytest -q
+```
+
+## The simulator
+
+The simulator runs Scout in dry mode at full speed, without calling the
+OpenAI API. It uses a deterministic stub brain that picks reasonable
+actions, so the dry-mode pipeline (sensors, safety, journal) can be
+exercised free of charge.
+
+```bash
+python scripts/simulate_day.py --ticks 1440      # one simulated day
+```
+
+It writes to `data/simulated_journal.jsonl` and prints an action
+breakdown at the end.
+
+## Bring-up scripts (Phase 2)
+
+Each piece of hardware gets its own small test script in
+`scripts/bringup/`. Run them on the Pi, one at a time, before letting
+Scout drive anything.
+
+```bash
+python scripts/bringup/test_dht22.py 4       # warm side probe
+python scripts/bringup/test_relay.py 18      # heat lamp relay
+python scripts/bringup/test_servo.py 23      # mealworm feeder
+python scripts/bringup/test_camera.py        # capture one frame
+```
+
+See [`docs/HARDWARE.md`](docs/HARDWARE.md) for the build order.
+
 ## Status
 
 Phase 1 is live. The code in this repo runs end to end against fake
 sensors and a placeholder camera frame. The journal fills up. The brain
-behaves itself. The hardware is on order.
+behaves itself. Tests are green. The hardware is on order.
 
 Phase 2 starts when the parts arrive.
 
+## Credits
+
 Private repo, owned by [@HalfSolder](https://github.com/HalfSolder).
 Shared with collaborators who are following the experiment.
+
+Follow along on X: [**@halfsoldered**](https://x.com/halfsoldered).

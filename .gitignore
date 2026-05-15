@@ -9,9 +9,11 @@ __pycache__/
 .mypy_cache/
 
 data/journal.jsonl
+data/simulated_journal.jsonl
 data/frames/
 data/*.log
 data/*.db
+bringup_frame.jpg
 
 .DS_Store
 Thumbs.db

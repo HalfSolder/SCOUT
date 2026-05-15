@@ -4,6 +4,9 @@ python-dotenv>=1.0.0
 Pillow>=10.0.0
 requests>=2.31.0
 
+# dev
+pytest>=8.0.0
+
 # Pi only. These only install on the Raspberry Pi.
 # Comment them out for local dev on Windows / macOS.
 # adafruit-circuitpython-dht
